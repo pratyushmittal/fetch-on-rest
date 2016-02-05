@@ -70,6 +70,15 @@ describe('test dependent libraries', function(){
     expect(api._getUrl(['users', 'me'])).toEqual('/api/users/me');
     expect(api._getUrl(['users', 'me'], {foo: 'bar'})).toEqual('/api/users/me?foo=bar');
   });
+
+  it('checks expansions with default get params', function() {
+    var Rest = require.requireActual('../rest.js');
+    var api = new Rest('/api?authentication=foobar');
+    expect(api._getUrl(['users', 'me'])).toEqual(
+      '/api/users/me?authentication=foobar');
+    expect(api._getUrl(['users', 'me'], {foo: 'bar'})).toEqual(
+      '/api/users/me?authentication=foobar&foo=bar');
+  })
 });
 
 

@@ -1,4 +1,5 @@
 # Fetch-on-REST
+[![Build Status](https://travis-ci.org/pratyushmittal/fetch-on-rest.svg?branch=master)](https://travis-ci.org/pratyushmittal/fetch-on-rest)
 
 **Fetch-on-REST is a RESTful API wrapper** built around [window.fetch][fetch].
 
@@ -74,6 +75,12 @@ URL parsing is handled using the exhaustive [URI.js library][urijs].
 
 **data:** `data` is the json body to be sent in the request.
 
+
+## Contribution
+
+Though we intend to keep the library minimalistic, we would love to see the pull-requests and discuss new issues.
+
+**Thanks for checking it out.**
 
 
 [fetch]: https://developer.mozilla.org/en/docs/Web/API/Fetch_API

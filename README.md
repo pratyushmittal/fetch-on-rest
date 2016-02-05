@@ -68,7 +68,8 @@ var api = new Rest('/', addOptions, useTrailingSlashes);
 
 **.rawGet(segments, query)**
 
-Requests return a promise object with the json response (except `rawGet`).
+All requests return a promise object.
+The promise object resolves to JSON response (except `rawGet` which resolves to text).
 URL parsing is handled using the exhaustive [URI.js library][urijs].
 
 **[segments][segments]:** `segments` are the parts of url. Can be array or string.

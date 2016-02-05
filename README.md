@@ -66,7 +66,9 @@ var api = new Rest('/', addOptions, useTrailingSlashes);
 
 **.delete(segments, data, query)**
 
-Requests return a promise object with the json response.
+**.rawGet(segments, query)**
+
+Requests return a promise object with the json response (except `rawGet`).
 URL parsing is handled using the exhaustive [URI.js library][urijs].
 
 **[segments][segments]:** `segments` are the parts of url. Can be array or string.

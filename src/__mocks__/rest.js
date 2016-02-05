@@ -54,6 +54,7 @@ class RestMock {
     this.__setResponse = __setResponse;
     this.__getPending = __getPending;
     this.get = jest.genMockFunction().mockImplementation(fakeRequest);
+    this.rawGet = jest.genMockFunction().mockImplementation(fakeRequest);
     this.post = jest.genMockFunction().mockImplementation(fakeRequest);
     this.patch = jest.genMockFunction().mockImplementation(fakeRequest);
     this.delete = jest.genMockFunction().mockImplementation(fakeRequest);

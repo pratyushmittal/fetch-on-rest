@@ -2,6 +2,11 @@
 
 var URI = require('urijs');
 
+function parseText(response) {
+  return response.text();
+}
+
+
 function parseJson(response) {
   if(response.status == 204)
     return;
@@ -18,13 +23,13 @@ function parseJson(response) {
 
 
 function getDefaultOptions(data, method) {
-  if(!method)
-    method = 'get';
-
   var options = {
-    method: method,
-    headers: { Accept: 'application/json' }
+    method: (!method || method == 'raw') ? 'get' : method,
+    headers: {}
   };
+
+  if(method != 'raw')
+    options.headers.Accept = 'application/json';
 
   if(data !== undefined) {
     options.body = JSON.stringify(data);
@@ -65,11 +70,15 @@ class Rest {
     var options = getDefaultOptions(data, method);
     this.addOptions(options);
     var raw = window.fetch(url, options);
-    return raw.then(parseJson);
+    return method == 'raw' ? raw.then(parseText) : raw.then(parseJson);
   }
 
   get(segments, query) {
     return this._request(segments, query);
+  }
+
+  rawGet(segments, query, acceptHeaders) {
+    return this._request(segments, query, undefined, 'raw')
   }
 
   post(segments, data, query) {

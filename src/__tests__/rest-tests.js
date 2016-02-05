@@ -1,6 +1,46 @@
 "use strict";
 jest.dontMock('urijs');
 
+describe('Test response parsing', function() {
+  var api;
+
+  function promised(response) {
+    return new Promise(function(resolve) {
+      resolve(response);
+    });
+  };
+
+  beforeEach(function() {
+    var Rest = require.requireActual('../rest.js');
+    api = new Rest();
+    window.fetch = jest.genMockFunction();
+  });
+
+  pit('returns json', function() {
+    var fetch = {
+      status: 200,
+      json: () => promised({foo: "bar"})
+    };
+    window.fetch.mockImplementation(() => promised(fetch));
+    return api.get('me').then(function(response) {
+      expect(response).toEqual({foo: "bar"});
+    });
+  });
+
+  pit('returns text', function() {
+    var fetch = {
+      status: 200,
+      text: () => promised(JSON.stringify({foo: "bar"}))
+    };
+    window.fetch.mockImplementation(() => promised(fetch));
+    return api.rawGet('me').then(function(response) {
+      expect(response).toEqual('{"foo":"bar"}');
+    });
+  });
+
+});
+
+
 describe('Test REST without options', function () {
   var api;
 
@@ -10,6 +50,14 @@ describe('Test REST without options', function () {
     window.fetch = jest.genMockFunction().mockReturnValue({
       then: jest.genMockFunction()
     });
+  });
+
+  it('calls the raw get api', function() {
+    api.rawGet('me');
+    expect(window.fetch).toBeCalledWith(
+      '/me',
+      { headers: {}, method: 'get' }
+    );
   });
 
   it('calls the get api', function() {
@@ -110,6 +158,18 @@ describe('Test REST with options', function () {
       {
         credentials: 'same-origin',
         headers: { Accept: 'application/json', },
+        method: 'get'
+      }
+    );
+  });
+
+  it('calls the raw get api', function() {
+    api.rawGet('me', 'foobar');
+    expect(window.fetch).toBeCalledWith(
+      '/base/me/?foobar',
+      {
+        credentials: 'same-origin',
+        headers: {},
         method: 'get'
       }
     );

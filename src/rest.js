@@ -72,20 +72,20 @@ class Rest {
     return this._request(segments, query);
   }
 
-  post(segments, data) {
-    return this._request(segments, {}, data, 'post');
+  post(segments, data, query) {
+    return this._request(segments, query, data, 'post');
   }
 
-  put(segments, data) {
-    return this._request(segments, {}, data, 'put');
+  put(segments, data, query) {
+    return this._request(segments, query, data, 'put');
   }
 
-  patch(segments, data) {
-    return this._request(segments, {}, data, 'patch');
+  patch(segments, data, query) {
+    return this._request(segments, query, data, 'patch');
   }
 
-  delete(segments, data) {
-    return this._request(segments, {}, data, 'delete');
+  delete(segments, data, query) {
+    return this._request(segments, query, data, 'delete');
   }
 
 };

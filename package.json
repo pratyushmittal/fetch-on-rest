@@ -5,6 +5,7 @@
   "main": "./lib/rest.js",
   "scripts": {
     "build": "babel src -d lib",
+    "prepublish": "npm build",
     "test": "jest --verbose"
   },
   "jest": {

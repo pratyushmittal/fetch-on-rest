@@ -18,7 +18,7 @@ function toJson(text) {
       var json = JSON.parse(text);
       resolve(json);
     } catch(err) {
-      reject(new Error('Given __setResponse is not JSON.'));
+      reject(new Error('Given setResponse is not JSON.'));
     }
   })
 }
@@ -40,11 +40,11 @@ var fakeRequest = function(url) {
 window.fetch = jest.genMockFunction().mockImplementation(fakeRequest);
 
 class RestMock extends Rest {
-  __setResponse(url, response) {
+  setResponse(url, response) {
     __responses[url] = response;
   }
 
-  __getPending() {
+  getPending() {
     var pending = [];
     for (var property in __responses) {
       if (__responses.hasOwnProperty(property)) {

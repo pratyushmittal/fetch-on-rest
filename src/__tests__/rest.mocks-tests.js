@@ -14,12 +14,12 @@ describe('Unit tests of mock components', function() {
   });
 
   afterEach(function() {
-    expect(api.__getPending().length).toEqual(0);
+    expect(api.getPending().length).toEqual(0);
   })
 
-  pit('should return correct __getPending', function() {
-    api.__setResponse('/users', JSON.stringify({foo: 'bar'}));
-    expect(api.__getPending().length).toEqual(1);
+  pit('should return correct getPending', function() {
+    api.setResponse('/users', JSON.stringify({foo: 'bar'}));
+    expect(api.getPending().length).toEqual(1);
     return api.get('users').then(resp => {
       expect(resp).toEqual({foo: 'bar'});
     });
@@ -39,28 +39,28 @@ describe('Unit tests of mock components', function() {
   });
 
   pit('should parse json', function() {
-    api.__setResponse('/users/me?foo=bar', JSON.stringify({foo: 'bar'}));
+    api.setResponse('/users/me?foo=bar', JSON.stringify({foo: 'bar'}));
     return api.get(['users', 'me'], {foo: 'bar'}).then(resp => {
       expect(resp).toEqual({foo: 'bar'});
     });
   });
 
   pit('should raise error on parse json', function() {
-    api.__setResponse('/users/me?foo=bar', "some text");
+    api.setResponse('/users/me?foo=bar', "some text");
     return api.get(['users', 'me'], {foo: 'bar'}).then(throwError, err => {
-      expect(err.message).toEqual('Given __setResponse is not JSON.');
+      expect(err.message).toEqual('Given setResponse is not JSON.');
     });
   });
 
   pit('should parse text', function() {
-    api.__setResponse('/foo', 'bar');
+    api.setResponse('/foo', 'bar');
     return api.rawGet('foo').then(resp => {
       expect(resp).toBe('bar');
     });
   });
 
   pit('should check the headers passed to window.fetch', function () {
-    api.__setResponse('/me', 'bar');
+    api.setResponse('/me', 'bar');
     return api.rawGet('me').then(resp => {
       expect(resp).toBe('bar');
       expect(window.fetch).toBeCalledWith(

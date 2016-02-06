@@ -1,7 +1,7 @@
 "use strict";
 /* global require, window, jest */
 
-describe('Unit tests of mocks of API', function() {
+describe('Unit tests of mock components', function() {
   var api;
 
   var throwError = function(resp) {
@@ -17,7 +17,7 @@ describe('Unit tests of mocks of API', function() {
     expect(api.__getPending().length).toEqual(0);
   })
 
-  pit('test pending', function() {
+  pit('should return correct __getPending', function() {
     api.__setResponse('/users', JSON.stringify({foo: 'bar'}));
     expect(api.__getPending().length).toEqual(1);
     return api.get('users').then(resp => {
@@ -25,30 +25,49 @@ describe('Unit tests of mocks of API', function() {
     });
   });
 
-  pit('test with params', function() {
-    api.__setResponse('/users/me?foo=bar', JSON.stringify({foo: 'bar'}));
-    return api.get(['users', 'me'], {foo: 'bar'}).then(resp => {
-      expect(resp).toEqual({foo: 'bar'});
-    });
-  });
-
-  pit('test unmocked call', function() {
+  pit('should raise error on unexpected calls', function() {
     return api.get('hi').then(throwError, err => {
       expect(err.message).toEqual('Call to /hi without expected response');
     });
   });
 
-  pit('test params call error', function() {
+  pit('should raise error on expected calls with params', function() {
     return api.get(['hi'], {foo: 'bar'}).then(throwError, err => {
       var message = 'Call to /hi?foo=bar without expected response';
       expect(err.message).toEqual(message);
     });
   });
 
-  pit('should return mocked value', function() {
+  pit('should parse json', function() {
+    api.__setResponse('/users/me?foo=bar', JSON.stringify({foo: 'bar'}));
+    return api.get(['users', 'me'], {foo: 'bar'}).then(resp => {
+      expect(resp).toEqual({foo: 'bar'});
+    });
+  });
+
+  pit('should raise error on parse json', function() {
+    api.__setResponse('/users/me?foo=bar', "some text");
+    return api.get(['users', 'me'], {foo: 'bar'}).then(throwError, err => {
+      expect(err.message).toEqual('Given __setResponse is not JSON.');
+    });
+  });
+
+  pit('should parse text', function() {
     api.__setResponse('/foo', 'bar');
     return api.rawGet('foo').then(resp => {
       expect(resp).toBe('bar');
     });
   });
+
+  pit('should check the headers passed to window.fetch', function () {
+    api.__setResponse('/me', 'bar');
+    return api.rawGet('me').then(resp => {
+      expect(resp).toBe('bar');
+      expect(window.fetch).toBeCalledWith(
+        '/me',
+        { headers: {}, method: 'get' }
+      );
+    });
+  });
+
 });

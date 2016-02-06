@@ -1,119 +1,8 @@
 "use strict";
-jest.dontMock('urijs');
 
-describe('Test response parsing', function() {
-  var api;
-
-  function promised(response) {
-    return new Promise(function(resolve) {
-      resolve(response);
-    });
-  };
-
-  beforeEach(function() {
-    var Rest = require.requireActual('../rest.js');
-    api = new Rest();
-    window.fetch = jest.genMockFunction();
-  });
-
-  pit('returns json', function() {
-    var fetch = {
-      status: 200,
-      json: () => promised({foo: "bar"})
-    };
-    window.fetch.mockImplementation(() => promised(fetch));
-    return api.get('me').then(function(response) {
-      expect(response).toEqual({foo: "bar"});
-    });
-  });
-
-  pit('returns text', function() {
-    var fetch = {
-      status: 200,
-      text: () => promised(JSON.stringify({foo: "bar"}))
-    };
-    window.fetch.mockImplementation(() => promised(fetch));
-    return api.rawGet('me').then(function(response) {
-      expect(response).toEqual('{"foo":"bar"}');
-    });
-  });
-
-});
-
-
-describe('Test REST without options', function () {
-  var api;
-
-  beforeEach(function() {
-    var Rest = require.requireActual('../rest.js');
-    api = new Rest();
-    window.fetch = jest.genMockFunction().mockReturnValue({
-      then: jest.genMockFunction()
-    });
-  });
-
-  it('calls the raw get api', function() {
-    api.rawGet('me');
-    expect(window.fetch).toBeCalledWith(
-      '/me',
-      { headers: {}, method: 'get' }
-    );
-  });
-
-  it('calls the get api', function() {
-    api.get('me');
-    expect(window.fetch).toBeCalledWith(
-      '/me',
-      {
-        headers: { Accept: 'application/json', },
-        method: 'get'
-      }
-    );
-  });
-
-  it('calls the post api', function() {
-    api.post('logout', {foo: 'bar'});
-    expect(window.fetch).toBeCalledWith(
-      '/logout',
-      { body: '{"foo":"bar"}',
-        headers: {
-          Accept: 'application/json',
-          "Content-Type": 'application/json'
-        },
-        method: 'post'
-      }
-    );
-  });
-
-  it('calls the delete api', function() {
-    api.delete(['posts', 33], {foo: 'bar'});
-    expect(window.fetch).toBeCalledWith(
-      '/posts/33',
-      { body: '{"foo":"bar"}',
-        headers: {
-          Accept: 'application/json',
-          "Content-Type": 'application/json'
-        },
-        method: 'delete'
-      }
-    );
-  });
-
-  it('calls the post api with empty data', function() {
-    api.post('logout');
-    expect(window.fetch).toBeCalledWith(
-      '/logout',
-      { headers: { Accept: 'application/json' },
-        method: 'post'
-      }
-    );
-  });
-});
-
-
-describe('test dependent libraries', function(){
+describe('tests for url parsing', function(){
   it('checks expansions', function() {
-    var Rest = require.requireActual('../rest.js');
+    var Rest = require('../rest.js');
     var api = new Rest('/api');
     expect(api._getUrl(['users', 'me'])).toEqual('/api/users/me');
     // Example from https://blogs.dropbox.com/developers/2015/03/json-in-urls/
@@ -123,7 +12,7 @@ describe('test dependent libraries', function(){
   });
 
   it('checks expansions with default get params', function() {
-    var Rest = require.requireActual('../rest.js');
+    var Rest = require('../rest.js');
     var api = new Rest('/api?authentication=foobar');
     expect(api._getUrl(['users', 'me'])).toEqual(
       '/api/users/me?authentication=foobar');
@@ -133,12 +22,81 @@ describe('test dependent libraries', function(){
 });
 
 
+describe('Test REST without options', function () {
+  var api;
+
+  beforeEach(function() {
+    var Rest = require('../rest.js');
+    api = new Rest();
+  })
+
+  afterEach(function() {
+    expect(api.__getPending()).toEqual([]);
+  })
+
+  pit('calls the get api', function () {
+    api.__setResponse('/me?foo=bar', JSON.stringify({foo: 'bar'}));
+    return api.get('me', {foo: 'bar'}).then(resp => {
+      expect(resp).toEqual({foo: 'bar'});
+      expect(window.fetch).toBeCalledWith('/me?foo=bar', {
+        headers: { Accept: 'application/json' },
+        method: 'get'
+      });
+    });
+  });
+
+  pit('calls the post api', function () {
+    api.__setResponse('/logout', JSON.stringify({foo: 'bar'}));
+    return api.post('logout', { foo: 'bar' }).then(resp => {
+      expect(resp).toEqual({foo: 'bar'});
+      expect(window.fetch).toBeCalledWith('/logout', {
+        body: '{"foo":"bar"}',
+        headers: {
+          Accept: 'application/json',
+          "Content-Type": 'application/json'
+        },
+        method: 'post'
+      });
+    });
+  });
+
+  pit('calls the post api with empty data', function() {
+    api.__setResponse('/logout', JSON.stringify({foo: 'bar'}));
+    return api.post('logout').then(resp => {
+      expect(resp).toEqual({foo: 'bar'});
+      expect(window.fetch).toBeCalledWith(
+        '/logout',
+        { headers: { Accept: 'application/json' },
+          method: 'post'
+        }
+      );
+    });
+  });
+
+  pit('calls the delete api', function() {
+    api.__setResponse('/posts/33', JSON.stringify({foo: 'bar'}));
+    return api.delete(['posts', 33], {foo: 'bar'}).then(resp => {
+      expect(resp).toEqual({foo: 'bar'});
+      expect(window.fetch).toBeCalledWith(
+        '/posts/33',
+        { body: '{"foo":"bar"}',
+          headers: {
+            Accept: 'application/json',
+            "Content-Type": 'application/json'
+          },
+          method: 'delete'
+        }
+      );
+    });
+  });
+});
+
 
 describe('Test REST with options', function () {
   var api;
 
   beforeEach(function() {
-    var Rest = require.requireActual('../rest.js');
+    var Rest = require('../rest.js');
     var options = function(defaults) {
       defaults.credentials = 'same-origin';
       if(defaults.method != 'get')
@@ -146,65 +104,44 @@ describe('Test REST with options', function () {
     }
     var useTrailingSlashes = true;
     api = new Rest('/base/', options, useTrailingSlashes);
-    window.fetch = jest.genMockFunction().mockReturnValue({
-      then: jest.genMockFunction()
+  })
+
+  afterEach(function() {
+    expect(api.__getPending()).toEqual([]);
+  })
+
+  pit('calls the get api', function() {
+    api.__setResponse('/base/me/', JSON.stringify({foo: 'bar'}));
+    return api.get('me').then(resp => {
+      expect(resp).toEqual({foo: "bar"});
+      expect(window.fetch).toBeCalledWith(
+        '/base/me/',
+        {
+          credentials: 'same-origin',
+          headers: {Accept: 'application/json'},
+          method: 'get'
+        }
+      );
     });
   });
 
-  it('calls the get api', function() {
-    api.get('me');
-    expect(window.fetch).toBeCalledWith(
-      '/base/me/',
-      {
-        credentials: 'same-origin',
-        headers: { Accept: 'application/json', },
-        method: 'get'
-      }
-    );
-  });
-
-  it('calls the raw get api', function() {
-    api.rawGet('me', 'foobar');
-    expect(window.fetch).toBeCalledWith(
-      '/base/me/?foobar',
-      {
-        credentials: 'same-origin',
-        headers: {},
-        method: 'get'
-      }
-    );
-  });
-
-  it('calls the post api', function() {
-    api.post('logout', {foo: 'bar'});
-    expect(window.fetch).toBeCalledWith(
-      '/base/logout/',
-      { body: '{"foo":"bar"}',
-        credentials: 'same-origin',
-        headers: {
-          Accept: 'application/json',
-          "Content-Type": 'application/json',
-          'X-CSRFToken': 'AUTHTOKENX'
-        },
-        method: 'post'
-      }
-    );
-  });
-
-  it('calls the delete api', function() {
-    api.delete(['screens', '33'], {foo: 'bar'});
-    expect(window.fetch).toBeCalledWith(
-      '/base/screens/33/',
-      { body: '{"foo":"bar"}',
-        credentials: 'same-origin',
-        headers: {
-          Accept: 'application/json',
-          "Content-Type": 'application/json',
-          'X-CSRFToken': 'AUTHTOKENX'
-        },
-        method: 'delete'
-      }
-    );
+  pit('calls the post api', function() {
+    api.__setResponse('/base/logout/', JSON.stringify({foo: 'bar'}));
+    return api.patch('logout', {foo: 'bar'}).then(resp => {
+      expect(resp).toEqual({foo: "bar"});
+      expect(window.fetch).toBeCalledWith(
+        '/base/logout/',
+        { body: '{"foo":"bar"}',
+          credentials: 'same-origin',
+          headers: {
+            Accept: 'application/json',
+            "Content-Type": 'application/json',
+            'X-CSRFToken': 'AUTHTOKENX'
+          },
+          method: 'patch'
+        }
+      );
+    })
   });
 
 });

@@ -2,26 +2,6 @@
 
 var URI = require('urijs');
 
-function parseText(response) {
-  return response.text();
-}
-
-
-function parseJson(response) {
-  if(response.status == 204)
-    return;
-  return response.json().then(function(json) {
-    if (response.status >= 200 && response.status < 300) {
-      return json;
-    } else {
-      var error = new Error(response.statusText);
-      error.json = json;
-      throw error;
-    }
-  });
-}
-
-
 function getDefaultOptions(data, method) {
   var options = {
     method: (!method || method == 'raw') ? 'get' : method,
@@ -65,19 +45,44 @@ class Rest {
     return uri.toString();
   }
 
-  _request(segments, query, data, method) {
-    var url = this._getUrl(segments, query);
+  _getOptions(data, method) {
     var options = getDefaultOptions(data, method);
     this.addOptions(options);
+    return options;
+  }
+
+  _parseText(response) {
+    return response.text();
+  }
+
+  _parseJson(response) {
+    if(response.status == 204)
+      return;
+    return response.json().then(function(json) {
+      if (response.status >= 200 && response.status < 300) {
+        return json;
+      } else {
+        var error = new Error(response.statusText);
+        error.json = json;
+        throw error;
+      }
+    });
+  }
+
+  _request(segments, query, data, method) {
+    var url = this._getUrl(segments, query);
+    var options = this._getOptions(data, method);
     var raw = window.fetch(url, options);
-    return method == 'raw' ? raw.then(parseText) : raw.then(parseJson);
+    if(method == 'raw')
+      return raw.then(this._parseText);
+    return raw.then(this._parseJson);
   }
 
   get(segments, query) {
     return this._request(segments, query);
   }
 
-  rawGet(segments, query, acceptHeaders) {
+  rawGet(segments, query) {
     return this._request(segments, query, undefined, 'raw')
   }
 
@@ -96,8 +101,7 @@ class Rest {
   delete(segments, data, query) {
     return this._request(segments, query, data, 'delete');
   }
-
-};
+}
 
 
 module.exports = Rest;

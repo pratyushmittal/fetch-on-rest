@@ -8,7 +8,6 @@ function getKey(url, params) {
   return JSON.stringify(key);
 }
 
-var __timeout = 500;
 var __responses = {};
 function __setResponse(url, response) {
   var key;
@@ -30,27 +29,20 @@ function __getPending() {
 }
 
 var fakeRequest = function(url, params) {
-  var then = jest.genMockFunction().mockImplementation(function(callback) {
+  return new Promise(function(resolve, reject) {
     var key = getKey(url, params);
-    return setTimeout(
-      function() {
-        if(!__responses.hasOwnProperty(key))
-          throw new Error("Unknown call: " + key);
-        var response = __responses[key];
-        delete __responses[key];
-        callback(response);
-      },
-      __timeout
-    );
-  });
-  return {then: then};
+    if(!__responses.hasOwnProperty(key))
+      reject(new Error(`Unknown call: ${key}`));
+    var response = __responses[key];
+    delete __responses[key];
+    resolve(response);
+  })
 };
 
 
 class RestMock {
 
   constructor() {
-    this.__timeout = __timeout;
     this.__setResponse = __setResponse;
     this.__getPending = __getPending;
     this.get = jest.genMockFunction().mockImplementation(fakeRequest);

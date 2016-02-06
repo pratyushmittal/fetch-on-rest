@@ -2,52 +2,57 @@
 /* global require, window, jest */
 
 describe('Unit tests of mocks of API', function() {
-  var api, mockFn;
+  var api;
+
+  var throwError = function(resp) {
+    throw new Error(`Got unexpected response: ${resp}`)
+  };
 
   beforeEach(function() {
     var Rest = require('../rest.js');
     api = new Rest();
-    mockFn = jest.genMockFunction();
   });
 
-  it('test pending', function() {
-    api.__setResponse('users', {});
-    expect(api.__getPending().length).toEqual(1);
-    api.get('users').then(mockFn);
-    expect(api.__getPending().length).toEqual(1);
-    jest.runAllTimers();
+  afterEach(function() {
     expect(api.__getPending().length).toEqual(0);
+  })
+
+  pit('test pending', function() {
+    api.__setResponse('users', {foo: 'bar'});
+    expect(api.__getPending().length).toEqual(1);
+    return api.get('users').then(resp => {
+      expect(resp).toEqual({foo: 'bar'});
+    });
   });
 
-  it('test with params', function() {
+  pit('test with params', function() {
     var req = {
       url: ['users', 'me'],
       load: {foo: 'bar'}
     };
-    api.__setResponse(req, {});
-    api.get(['users', 'me'], {foo: 'bar'}).then(mockFn);
-    jest.runAllTimers();
-    expect(api.__getPending().length).toEqual(0);
+    api.__setResponse(req, {foo: 'bar'});
+    return api.get(['users', 'me'], {foo: 'bar'}).then(resp => {
+      expect(resp).toEqual({foo: 'bar'});
+    });
   });
 
-  it('test unmocked call', function() {
-    api.get('/hi/').then(mockFn);
-    var error = 'Unknown call: {"url":"/hi/"}';
-    expect(jest.runAllTimers).toThrow(new Error(error));
+  pit('test unmocked call', function() {
+    return api.get('/hi/').then(throwError, err => {
+      expect(err.message).toEqual('Unknown call: {"url":"/hi/"}');
+    });
   });
 
-  it('test params call error', function() {
-    api.get(['hi'], {foo: 'bar'}).then(mockFn);
-    api.__setResponse(['hi'], 'no foo');
-    var error = 'Unknown call: {"url":["hi"],"load":{"foo":"bar"}}';
-    expect(jest.runAllTimers).toThrow(new Error(error));
+  pit('test params call error', function() {
+    return api.get(['hi'], {foo: 'bar'}).then(throwError, err => {
+      var message = 'Unknown call: {"url":["hi"],"load":{"foo":"bar"}}';
+      expect(err.message).toEqual(message);
+    });
   });
 
-  it('should return mocked value', function() {
-    var mocked = jest.genMockFunction();
-    api.get('/foo/').then(mocked);
+  pit('should return mocked value', function() {
     api.__setResponse('/foo/', 'bar');
-    jest.runAllTimers();
-    expect(mocked).toBeCalledWith('bar');
+    return api.get('/foo/').then(resp => {
+      expect(resp).toBe('bar');
+    });
   });
 });

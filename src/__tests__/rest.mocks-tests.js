@@ -18,7 +18,7 @@ describe('Unit tests of mocks of API', function() {
   })
 
   pit('test pending', function() {
-    api.__setResponse('users', {foo: 'bar'});
+    api.__setResponse('/users', JSON.stringify({foo: 'bar'}));
     expect(api.__getPending().length).toEqual(1);
     return api.get('users').then(resp => {
       expect(resp).toEqual({foo: 'bar'});
@@ -26,32 +26,28 @@ describe('Unit tests of mocks of API', function() {
   });
 
   pit('test with params', function() {
-    var req = {
-      url: ['users', 'me'],
-      load: {foo: 'bar'}
-    };
-    api.__setResponse(req, {foo: 'bar'});
+    api.__setResponse('/users/me?foo=bar', JSON.stringify({foo: 'bar'}));
     return api.get(['users', 'me'], {foo: 'bar'}).then(resp => {
       expect(resp).toEqual({foo: 'bar'});
     });
   });
 
   pit('test unmocked call', function() {
-    return api.get('/hi/').then(throwError, err => {
-      expect(err.message).toEqual('Unknown call: {"url":"/hi/"}');
+    return api.get('hi').then(throwError, err => {
+      expect(err.message).toEqual('Call to /hi without expected response');
     });
   });
 
   pit('test params call error', function() {
     return api.get(['hi'], {foo: 'bar'}).then(throwError, err => {
-      var message = 'Unknown call: {"url":["hi"],"load":{"foo":"bar"}}';
+      var message = 'Call to /hi?foo=bar without expected response';
       expect(err.message).toEqual(message);
     });
   });
 
   pit('should return mocked value', function() {
-    api.__setResponse('/foo/', 'bar');
-    return api.get('/foo/').then(resp => {
+    api.__setResponse('/foo', 'bar');
+    return api.rawGet('foo').then(resp => {
       expect(resp).toBe('bar');
     });
   });

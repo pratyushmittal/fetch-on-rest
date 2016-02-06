@@ -1,58 +1,59 @@
 "use strict";
 
-function getKey(url, params) {
-  var key = {
-    url: url,
-    load: params
-  };
-  return JSON.stringify(key);
-}
+jest.dontMock('urijs');
+
+var Rest = require.requireActual('../rest.js');
 
 var __responses = {};
-function __setResponse(url, response) {
-  var key;
-  if(url.hasOwnProperty('url') && url.hasOwnProperty('load'))
-    key = getKey(url.url, url.load);
-  else
-    key = getKey(url);
-  __responses[key] = response;
+
+function toText(text) {
+  return new Promise(function(resolve) {
+    resolve(text);
+  })
 }
 
-function __getPending() {
-  var pending = [];
-  for (var property in __responses) {
-    if (__responses.hasOwnProperty(property)) {
-      pending.push(property);
-    }
-  }
-  return pending;
-}
-
-var fakeRequest = function(url, params) {
+function toJson(text) {
   return new Promise(function(resolve, reject) {
-    var key = getKey(url, params);
-    if(!__responses.hasOwnProperty(key))
-      reject(new Error(`Unknown call: ${key}`));
-    var response = __responses[key];
-    delete __responses[key];
-    resolve(response);
+    try {
+      var json = JSON.parse(text);
+      resolve(json);
+    } catch(err) {
+      reject(new Error('Given __setResponse is not JSON.'));
+    }
+  })
+}
+
+var fakeRequest = function(url) {
+  return new Promise(function(resolve, reject) {
+    if(!__responses.hasOwnProperty(url))
+      reject(new Error(`Call to ${url} without expected response`));
+    var response = __responses[url];
+    delete __responses[url];
+    resolve({
+      status: 200,
+      json: toJson.bind(null, response),
+      text: toText.bind(null, response)
+    });
   })
 };
 
+window.fetch = jest.genMockFunction().mockImplementation(fakeRequest);
 
-class RestMock {
-
-  constructor() {
-    this.__setResponse = __setResponse;
-    this.__getPending = __getPending;
-    this.get = jest.genMockFunction().mockImplementation(fakeRequest);
-    this.rawGet = jest.genMockFunction().mockImplementation(fakeRequest);
-    this.post = jest.genMockFunction().mockImplementation(fakeRequest);
-    this.patch = jest.genMockFunction().mockImplementation(fakeRequest);
-    this.delete = jest.genMockFunction().mockImplementation(fakeRequest);
-    this.put = jest.genMockFunction().mockImplementation(fakeRequest);
+class RestMock extends Rest {
+  __setResponse(url, response) {
+    __responses[url] = response;
   }
 
+  __getPending() {
+    var pending = [];
+    for (var property in __responses) {
+      if (__responses.hasOwnProperty(property)) {
+        pending.push(property);
+      }
+    }
+    return pending;
+  }
 }
+
 
 module.exports = RestMock;

@@ -33,12 +33,14 @@ class Rest {
 
   _getUrl(segments, query) {
     var uri = new URI(this.base);
+    segments = segments || [];
     if(!(segments instanceof Array))
       segments = [segments]
-    for(let segment of segments) {
+    let segment;
+    for(segment of segments) {
       uri = uri.segment(segment.toString());
     }
-    if(this.useTrailingSlashes)
+    if(this.useTrailingSlashes && segment.indexOf('.') == -1)
       uri = uri.segment('');
     if(query)
       uri = uri.addSearch(query);

@@ -6,6 +6,7 @@ describe('tests for url parsing', function(){
     var api = new Rest();
     expect(api._getUrl()).toEqual('/');
     expect(api._getUrl('/')).toEqual('/');
+    expect(api._getUrl(['posts', 33])).toEqual('/posts/33');
     expect(api._getUrl(['users', 'me'])).toEqual('/users/me');
     // Example from https://blogs.dropbox.com/developers/2015/03/json-in-urls/
     var params = JSON.stringify({a: "b", c: 4});
@@ -25,6 +26,7 @@ describe('tests for url parsing', function(){
   it('checks trailing slashes', function() {
     var Rest = require('../rest.js');
     var api = new Rest('/api', function() {}, true);
+    expect(api._getUrl(['posts', 33])).toEqual('/api/posts/33/');
     expect(api._getUrl(['users', 'me'])).toEqual(
       '/api/users/me/');
     expect(api._getUrl(['users', 'me'], {foo: 'bar'})).toEqual(

@@ -38,7 +38,8 @@ class Rest {
       segments = [segments]
     let segment;
     for(segment of segments) {
-      uri = uri.segment(segment.toString());
+      segment = segment.toString();
+      uri = uri.segment(segment);
     }
     if(this.useTrailingSlashes && segment.indexOf('.') == -1)
       uri = uri.segment('');

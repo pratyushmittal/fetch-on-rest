@@ -89,15 +89,14 @@ describe('Test REST without options', function () {
   });
 
   pit('calls the delete api', function() {
-    api.setResponse('/posts/33', JSON.stringify({foo: 'bar'}));
+    api.setResponse('/posts/33?foo=bar', JSON.stringify({delete: true}));
     return api.delete(['posts', 33], {foo: 'bar'}).then(resp => {
-      expect(resp).toEqual({foo: 'bar'});
+      expect(resp).toEqual({delete: true});
       expect(window.fetch).toBeCalledWith(
-        '/posts/33',
-        { body: '{"foo":"bar"}',
+        '/posts/33?foo=bar',
+        {
           headers: {
-            Accept: 'application/json',
-            "Content-Type": 'application/json'
+            Accept: 'application/json'
           },
           method: 'delete'
         }

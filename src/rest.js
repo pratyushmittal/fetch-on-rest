@@ -101,8 +101,8 @@ class Rest {
     return this._request(segments, query, data, 'patch');
   }
 
-  delete(segments, data, query) {
-    return this._request(segments, query, data, 'delete');
+  delete(segments, query) {
+    return this._request(segments, query, undefined, 'delete');
   }
 }
 

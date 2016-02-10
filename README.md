@@ -64,7 +64,7 @@ var api = new Rest('/', addOptions, useTrailingSlashes);
 
 **.patch(segments, data, query)**
 
-**.delete(segments, data, query)**
+**.delete(segments, query)**
 
 **.rawGet(segments, query)**
 

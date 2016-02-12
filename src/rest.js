@@ -36,9 +36,9 @@ class Rest {
     segments = segments || [];
     if(!(segments instanceof Array))
       segments = [segments]
-    let segment;
-    for(segment of segments) {
-      segment = segment.toString();
+    var segment;
+    for(var i=0; i < segments.length; i++) {
+      segment = segments[i].toString();
       uri = uri.segment(segment);
     }
     if(this.useTrailingSlashes && segment.indexOf('.') == -1)

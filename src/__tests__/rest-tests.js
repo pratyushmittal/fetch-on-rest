@@ -152,7 +152,7 @@ describe('Test REST with options', function () {
             "Content-Type": 'application/json',
             'X-CSRFToken': 'AUTHTOKENX'
           },
-          method: 'patch'
+          method: 'PATCH'
         }
       );
     })

@@ -111,10 +111,15 @@ describe('Test REST with options', function () {
 
   beforeEach(function() {
     var Rest = require('../rest.js');
-    var options = function(defaults) {
+    var options = function(defaults, url) {
+      var endsWith = function(haystack, needle) {
+        return haystack.indexOf(needle, haystack.length - needle.length) !== -1;
+      };
       defaults.credentials = 'same-origin';
       if(defaults.method != 'get')
         defaults.headers['X-CSRFToken'] = 'AUTHTOKENX';
+      if(endsWith(url, '.html'))
+        defaults.headers.Accept = 'text/html,*/*';
     }
     var useTrailingSlashes = true;
     api = new Rest('/base/', options, useTrailingSlashes);
@@ -133,6 +138,21 @@ describe('Test REST with options', function () {
         {
           credentials: 'same-origin',
           headers: {Accept: 'application/json'},
+          method: 'get'
+        }
+      );
+    });
+  });
+
+  pit('calls the get api with options', function() {
+    api.setResponse('/base/me.html', JSON.stringify({foo: 'bar'}));
+    return api.get('me.html').then(resp => {
+      expect(resp).toEqual({foo: "bar"});
+      expect(window.fetch).toBeCalledWith(
+        '/base/me.html',
+        {
+          credentials: 'same-origin',
+          headers: {Accept: 'text/html,*/*'},
           method: 'get'
         }
       );

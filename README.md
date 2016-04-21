@@ -34,7 +34,7 @@ api.post('posts', {title: 'foo', content: 'bar'}).then(function(response) {});
 
 `basePath`: Is a string. Can be absolute or relative path.
 
-`addOptions(defaultOptions)`: Is an optional function. Can be used to modify the headers.
+`addOptions(defaultOptions, url)`: Is an optional function. Can be used to modify the headers.
 Should modify the received `defaultOptions` object and ***not*** return a new object.
 
 `useTrailingSlashes:` Default false. By setting true, `.get('users')` will hit the url `/users/`.
@@ -43,7 +43,7 @@ Should modify the received `defaultOptions` object and ***not*** return a new ob
 
 ```
 // Adding same-origin and X-CSRFToken token
-function addOptions(defaults) {
+function addOptions(defaults, url) {
   defaults.credentials = 'same-origin';
   if(defaults.method != 'get')
     defaults.headers['X-CSRFToken'] = 'AUTHTOKENX';

@@ -48,9 +48,9 @@ class Rest {
     return uri.toString();
   }
 
-  _getOptions(data, method) {
+  _getOptions(data, method, url) {
     var options = getDefaultOptions(data, method);
-    this.addOptions(options);
+    this.addOptions(options, url);
     return options;
   }
 
@@ -74,7 +74,7 @@ class Rest {
 
   _request(segments, query, data, method) {
     var url = this._getUrl(segments, query);
-    var options = this._getOptions(data, method);
+    var options = this._getOptions(data, method, url);
     var raw = window.fetch(url, options);
     if(method == 'raw')
       return raw.then(this._parseText);

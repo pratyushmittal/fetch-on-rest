@@ -37,7 +37,7 @@ var fakeRequest = function(url) {
   })
 };
 
-window.fetch = jest.genMockFunction().mockImplementation(fakeRequest);
+window.fetch = jest.fn(fakeRequest);
 
 class RestMock extends Rest {
   setResponse(url, response) {

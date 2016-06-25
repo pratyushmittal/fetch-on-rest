@@ -1,6 +1,6 @@
 {
   "name": "fetch-on-rest",
-  "version": "1.6.7",
+  "version": "1.6.8",
   "description": "A REST API wrapper around window.fetch",
   "main": "./lib/rest.js",
   "scripts": {

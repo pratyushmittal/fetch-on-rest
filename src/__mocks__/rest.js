@@ -1,6 +1,6 @@
 "use strict";
 
-jest.dontMock('urijs');
+jest.unmock('urijs');
 
 var Rest = require.requireActual('../rest.js');
 

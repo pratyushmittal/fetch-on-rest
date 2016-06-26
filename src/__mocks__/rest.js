@@ -9,20 +9,18 @@ var __responses = {};
 
 function toText(text) {
   return new Promise(function(resolve) {
-    process.nextTick(() => resolve(text))
+    resolve(text)
   })
 }
 
 function toJson(text) {
   return new Promise(function(resolve, reject) {
-    process.nextTick(() => {
-      try {
-        var json = JSON.parse(text);
-        resolve(json);
-      } catch(err) {
-        reject(new Error('Given setResponse is not JSON.'));
-      }
-    })
+    try {
+      var json = JSON.parse(text);
+      resolve(json);
+    } catch(err) {
+      reject(new Error('Given setResponse is not JSON.'));
+    }
   })
 }
 

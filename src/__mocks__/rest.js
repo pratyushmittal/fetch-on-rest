@@ -1,4 +1,5 @@
 "use strict";
+/* global Promise, process */
 
 jest.unmock('urijs');
 
@@ -8,32 +9,36 @@ var __responses = {};
 
 function toText(text) {
   return new Promise(function(resolve) {
-    resolve(text);
+    process.nextTick(() => resolve(text))
   })
 }
 
 function toJson(text) {
   return new Promise(function(resolve, reject) {
-    try {
-      var json = JSON.parse(text);
-      resolve(json);
-    } catch(err) {
-      reject(new Error('Given setResponse is not JSON.'));
-    }
+    process.nextTick(() => {
+      try {
+        var json = JSON.parse(text);
+        resolve(json);
+      } catch(err) {
+        reject(new Error('Given setResponse is not JSON.'));
+      }
+    })
   })
 }
 
 var fakeRequest = function(url) {
   return new Promise(function(resolve, reject) {
-    if(!__responses.hasOwnProperty(url))
-      reject(new Error(`Call to ${url} without expected response`));
-    var response = __responses[url];
-    delete __responses[url];
-    resolve({
-      status: 200,
-      json: toJson.bind(null, response),
-      text: toText.bind(null, response)
-    });
+    process.nextTick(() => {
+      if(!__responses.hasOwnProperty(url))
+        reject(new Error(`Call to ${url} without expected response`));
+      var response = __responses[url];
+      delete __responses[url];
+      resolve({
+        status: 200,
+        json: toJson.bind(null, response),
+        text: toText.bind(null, response)
+      });
+    })
   })
 };
 

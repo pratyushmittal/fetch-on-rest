@@ -1,4 +1,5 @@
 "use strict";
+jest.mock('../rest.js')
 
 describe('tests for url parsing', function(){
   it('checks expansions', function() {

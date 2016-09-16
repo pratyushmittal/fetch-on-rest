@@ -1,6 +1,6 @@
 {
   "name": "fetch-on-rest",
-  "version": "1.7.1",
+  "version": "2.0.0",
   "description": "A REST API wrapper around window.fetch",
   "main": "./lib/rest.js",
   "scripts": {
@@ -9,15 +9,7 @@
     "test": "jest --verbose"
   },
   "jest": {
-    "testFileExtensions": [
-      "es6",
-      "js"
-    ],
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "es6"
-    ]
+    "rootDir": "src"
   },
   "repository": {
     "type": "git",
@@ -36,12 +28,12 @@
   },
   "homepage": "https://github.com/pratyushmittal/fetch-on-rest#readme",
   "devDependencies": {
-    "babel-cli": "^6.10.1",
-    "babel-eslint": "^6.1.0",
-    "babel-jest": "13.0.0",
-    "babel-preset-es2015": "^6.9.0",
-    "eslint": "^2.13.1",
-    "jest-cli": "^13.0.0"
+    "babel-cli": "^6.14.0",
+    "babel-eslint": "^6.1.2",
+    "babel-jest": "15.0.0",
+    "babel-preset-es2015": "^6.14.0",
+    "eslint": "^3.5.0",
+    "jest-cli": "^15.1.1"
   },
   "dependencies": {
     "urijs": "^1.18.1"

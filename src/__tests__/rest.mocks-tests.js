@@ -1,5 +1,5 @@
 "use strict";
-/* global require, window, jest */
+jest.mock('../rest.js')
 
 describe('Unit tests of mock components', function() {
   var api;

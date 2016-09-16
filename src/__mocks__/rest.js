@@ -1,8 +1,4 @@
 "use strict";
-/* global Promise, process */
-
-jest.unmock('urijs');
-
 var Rest = require.requireActual('../rest.js');
 
 var __responses = {};

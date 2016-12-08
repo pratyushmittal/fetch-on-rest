@@ -1,4 +1,3 @@
-"use strict";
 var Rest = require.requireActual('../rest.js');
 
 var __responses = {};
@@ -22,7 +21,7 @@ function toJson(text) {
 
 var fakeRequest = function(url) {
   return new Promise(function(resolve, reject) {
-    process.nextTick(() => {
+    process.nextTick(function() {
       if(!__responses.hasOwnProperty(url))
         reject(new Error(`Call to ${url} without expected response`));
       var response = __responses[url];
@@ -38,12 +37,14 @@ var fakeRequest = function(url) {
 
 window.fetch = jest.fn(fakeRequest);
 
-class RestMock extends Rest {
-  setResponse(url, response) {
+function RestMock(base, addOptions, useTrailingSlashes) {
+  var rest = Rest(base, addOptions, useTrailingSlashes)
+
+  rest.setResponse = function(url, response) {
     __responses[url] = response;
   }
 
-  getPending() {
+  rest.getPending = function() {
     var pending = [];
     for (var property in __responses) {
       if (__responses.hasOwnProperty(property)) {
@@ -52,7 +53,8 @@ class RestMock extends Rest {
     }
     return pending;
   }
+
+  return rest
 }
 
-
-module.exports = RestMock;
+module.exports = RestMock

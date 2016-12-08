@@ -1,4 +1,3 @@
-"use strict";
 jest.mock('../rest.js')
 
 describe('Unit tests of mock components', function() {
@@ -10,7 +9,7 @@ describe('Unit tests of mock components', function() {
 
   beforeEach(function() {
     var Rest = require('../rest.js');
-    api = new Rest();
+    api = Rest()
   });
 
   afterEach(function() {

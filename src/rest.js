@@ -1,5 +1,3 @@
-"use strict";
-
 var URI = require('urijs');
 
 function getDefaultOptions(data, method) {
@@ -19,20 +17,15 @@ function getDefaultOptions(data, method) {
 }
 
 
-class Rest {
+function Rest(base, addOptions, useTrailingSlashes) {
 
-  constructor(base, options, useTrailingSlashes) {
-    if(base === undefined)
-      base = '/';
-    if(options === undefined)
-      options = function() {};
-    this.base = base;
-    this.addOptions = options;
-    this.useTrailingSlashes = useTrailingSlashes;
-  }
+  if(base === undefined)
+    base = '/';
+  if(addOptions === undefined)
+    addOptions = function() {};
 
-  _getUrl(segments, query) {
-    var uri = new URI(this.base);
+  function _getUrl(segments, query) {
+    var uri = new URI(base);
     segments = segments || [];
     if(!(segments instanceof Array))
       segments = [segments]
@@ -41,24 +34,24 @@ class Rest {
       segment = segments[i].toString();
       uri = uri.segment(segment);
     }
-    if(this.useTrailingSlashes && segment.indexOf('.') == -1)
+    if(useTrailingSlashes && segment.indexOf('.') == -1)
       uri = uri.segment('');
     if(query)
       uri = uri.addSearch(query);
     return uri.toString();
   }
 
-  _getOptions(data, method, url) {
+  function _getOptions(data, method, url) {
     var options = getDefaultOptions(data, method);
-    this.addOptions(options, url);
+    addOptions(options, url);
     return options;
   }
 
-  _parseText(response) {
+  function _parseText(response) {
     return response.text();
   }
 
-  _parseJson(response) {
+  function _parseJson(response) {
     if(response.status == 204)
       return;
     return response.json().then(function(json) {
@@ -72,39 +65,49 @@ class Rest {
     });
   }
 
-  _request(segments, query, data, method) {
-    var url = this._getUrl(segments, query);
-    var options = this._getOptions(data, method, url);
+  function _request(segments, query, data, method) {
+    var url = _getUrl(segments, query);
+    var options = _getOptions(data, method, url);
     var raw = window.fetch(url, options);
     if(method == 'raw')
-      return raw.then(this._parseText);
-    return raw.then(this._parseJson);
+      return raw.then(_parseText);
+    return raw.then(_parseJson);
   }
 
-  get(segments, query) {
-    return this._request(segments, query);
+  function get(segments, query) {
+    return _request(segments, query);
   }
 
-  rawGet(segments, query) {
-    return this._request(segments, query, undefined, 'raw')
+  function rawGet(segments, query) {
+    return _request(segments, query, undefined, 'raw')
   }
 
-  post(segments, data, query) {
-    return this._request(segments, query, data, 'post');
+  function post(segments, data, query) {
+    return _request(segments, query, data, 'post');
   }
 
-  put(segments, data, query) {
-    return this._request(segments, query, data, 'put');
+  function put(segments, data, query) {
+    return _request(segments, query, data, 'put');
   }
 
-  patch(segments, data, query) {
-    return this._request(segments, query, data, 'PATCH');
+  function patch(segments, data, query) {
+    return _request(segments, query, data, 'PATCH');
   }
 
-  delete(segments, query) {
-    return this._request(segments, query, undefined, 'delete');
+  function del(segments, query) {
+    return _request(segments, query, undefined, 'delete');
+  }
+
+  return {
+    _getUrl: _getUrl,
+    get: get,
+    rawGet: rawGet,
+    post: post,
+    put: put,
+    patch: patch,
+    del: del
   }
 }
 
 
-module.exports = Rest;
+module.exports = Rest

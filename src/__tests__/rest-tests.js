@@ -4,7 +4,7 @@ jest.mock('../rest.js')
 describe('tests for url parsing', function(){
   it('checks expansions', function() {
     var Rest = require('../rest.js');
-    var api = new Rest();
+    var api = Rest();
     expect(api._getUrl()).toEqual('/');
     expect(api._getUrl('/')).toEqual('/');
     expect(api._getUrl(['posts', 33])).toEqual('/posts/33');
@@ -17,7 +17,7 @@ describe('tests for url parsing', function(){
 
   it('checks expansions with default get params', function() {
     var Rest = require('../rest.js');
-    var api = new Rest('/api?authentication=foobar');
+    var api = Rest('/api?authentication=foobar');
     expect(api._getUrl(['users', 'me'])).toEqual(
       '/api/users/me?authentication=foobar');
     expect(api._getUrl(['users', 'me'], {foo: 'bar'})).toEqual(
@@ -26,7 +26,7 @@ describe('tests for url parsing', function(){
 
   it('checks trailing slashes', function() {
     var Rest = require('../rest.js');
-    var api = new Rest('/api', function() {}, true);
+    var api = Rest('/api', function() {}, true);
     expect(api._getUrl(['posts', 33])).toEqual('/api/posts/33/');
     expect(api._getUrl(['users', 'me'])).toEqual(
       '/api/users/me/');
@@ -43,7 +43,7 @@ describe('Test REST without options', function () {
 
   beforeEach(function() {
     var Rest = require('../rest.js');
-    api = new Rest();
+    api = Rest();
   })
 
   afterEach(function() {
@@ -91,7 +91,7 @@ describe('Test REST without options', function () {
 
   pit('calls the delete api', function() {
     api.setResponse('/posts/33?foo=bar', JSON.stringify({delete: true}));
-    return api.delete(['posts', 33], {foo: 'bar'}).then(resp => {
+    return api.del(['posts', 33], {foo: 'bar'}).then(resp => {
       expect(resp).toEqual({delete: true});
       expect(window.fetch).toBeCalledWith(
         '/posts/33?foo=bar',
@@ -123,7 +123,7 @@ describe('Test REST with options', function () {
         defaults.headers.Accept = 'text/html,*/*';
     }
     var useTrailingSlashes = true;
-    api = new Rest('/base/', options, useTrailingSlashes);
+    api = Rest('/base/', options, useTrailingSlashes)
   })
 
   afterEach(function() {

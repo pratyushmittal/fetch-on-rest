@@ -64,7 +64,7 @@ var api = new Rest('/', addOptions, useTrailingSlashes);
 
 **.patch(segments, data, query)**
 
-**.delete(segments, query)**
+**.del(segments, query)**
 
 **.rawGet(segments, query)**
 
@@ -77,6 +77,14 @@ URL parsing is handled using the exhaustive [URI.js library][urijs].
 **[query][query]:** `query` is the search or GET params part of the url. Should be a key-value object.
 
 **data:** `data` is the json body to be sent in the request.
+
+
+## Changelog and Migration
+
+Since version 2:
+
+- the `delete` method has been renamed as `del`
+- have dropped the babel and ES2015 dependencies: this makes usage with React Native smoother
 
 
 ## Contribution

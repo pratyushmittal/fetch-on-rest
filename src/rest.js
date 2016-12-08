@@ -68,7 +68,7 @@ function Rest(base, addOptions, useTrailingSlashes) {
   function _request(segments, query, data, method) {
     var url = _getUrl(segments, query);
     var options = _getOptions(data, method, url);
-    var raw = window.fetch(url, options);
+    var raw = fetch(url, options);
     if(method == 'raw')
       return raw.then(_parseText);
     return raw.then(_parseJson);

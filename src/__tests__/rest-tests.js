@@ -54,7 +54,7 @@ describe('Test REST without options', function () {
     api.setResponse('/me?foo=bar', JSON.stringify({foo: 'bar'}));
     return api.get('me', {foo: 'bar'}).then(resp => {
       expect(resp).toEqual({foo: 'bar'});
-      expect(window.fetch).toBeCalledWith('/me?foo=bar', {
+      expect(fetch).toBeCalledWith('/me?foo=bar', {
         headers: { Accept: 'application/json' },
         method: 'get'
       });
@@ -65,7 +65,7 @@ describe('Test REST without options', function () {
     api.setResponse('/logout', JSON.stringify({foo: 'bar'}));
     return api.post('logout', { foo: 'bar' }).then(resp => {
       expect(resp).toEqual({foo: 'bar'});
-      expect(window.fetch).toBeCalledWith('/logout', {
+      expect(fetch).toBeCalledWith('/logout', {
         body: '{"foo":"bar"}',
         headers: {
           Accept: 'application/json',
@@ -80,7 +80,7 @@ describe('Test REST without options', function () {
     api.setResponse('/logout', JSON.stringify({foo: 'bar'}));
     return api.post('logout').then(resp => {
       expect(resp).toEqual({foo: 'bar'});
-      expect(window.fetch).toBeCalledWith(
+      expect(fetch).toBeCalledWith(
         '/logout',
         { headers: { Accept: 'application/json' },
           method: 'post'
@@ -93,7 +93,7 @@ describe('Test REST without options', function () {
     api.setResponse('/posts/33?foo=bar', JSON.stringify({delete: true}));
     return api.del(['posts', 33], {foo: 'bar'}).then(resp => {
       expect(resp).toEqual({delete: true});
-      expect(window.fetch).toBeCalledWith(
+      expect(fetch).toBeCalledWith(
         '/posts/33?foo=bar',
         {
           headers: {
@@ -134,7 +134,7 @@ describe('Test REST with options', function () {
     api.setResponse('/base/me/', JSON.stringify({foo: 'bar'}));
     return api.get('me').then(resp => {
       expect(resp).toEqual({foo: "bar"});
-      expect(window.fetch).toBeCalledWith(
+      expect(fetch).toBeCalledWith(
         '/base/me/',
         {
           credentials: 'same-origin',
@@ -149,7 +149,7 @@ describe('Test REST with options', function () {
     api.setResponse('/base/me.html', JSON.stringify({foo: 'bar'}));
     return api.get('me.html').then(resp => {
       expect(resp).toEqual({foo: "bar"});
-      expect(window.fetch).toBeCalledWith(
+      expect(fetch).toBeCalledWith(
         '/base/me.html',
         {
           credentials: 'same-origin',
@@ -164,7 +164,7 @@ describe('Test REST with options', function () {
     api.setResponse('/base/logout/', JSON.stringify({foo: 'bar'}));
     return api.patch('logout', {foo: 'bar'}).then(resp => {
       expect(resp).toEqual({foo: "bar"});
-      expect(window.fetch).toBeCalledWith(
+      expect(fetch).toBeCalledWith(
         '/base/logout/',
         { body: '{"foo":"bar"}',
           credentials: 'same-origin',

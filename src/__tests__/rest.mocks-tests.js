@@ -58,11 +58,11 @@ describe('Unit tests of mock components', function() {
     });
   });
 
-  it('should check the headers passed to window.fetch', function () {
+  it('should check the headers passed to fetch', function () {
     api.setResponse('/me', 'bar');
     return api.rawGet('me').then(resp => {
       expect(resp).toBe('bar');
-      expect(window.fetch).toBeCalledWith(
+      expect(fetch).toBeCalledWith(
         '/me',
         { headers: {}, method: 'get' }
       );

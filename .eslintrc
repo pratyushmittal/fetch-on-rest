@@ -4,6 +4,7 @@
 
   # Global variables: false means that these are read-only
   globals: {
+    fetch: false,
     require: false,
     document: true,
     window: true,

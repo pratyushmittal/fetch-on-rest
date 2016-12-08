@@ -35,7 +35,7 @@ var fakeRequest = function(url) {
   })
 };
 
-window.fetch = jest.fn(fakeRequest);
+fetch = jest.fn(fakeRequest);
 
 function RestMock(base, addOptions, useTrailingSlashes) {
   var rest = Rest(base, addOptions, useTrailingSlashes)

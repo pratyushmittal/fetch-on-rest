@@ -1,3 +1,4 @@
+jest.unmock('urijs')
 var Rest = require.requireActual('../rest.js');
 
 var __responses = {};

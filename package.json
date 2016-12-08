@@ -26,9 +26,9 @@
   },
   "homepage": "https://github.com/pratyushmittal/fetch-on-rest#readme",
   "devDependencies": {
-    "jest-cli": "^15.1.1"
+    "jest-cli": "^17.0.3"
   },
   "dependencies": {
-    "urijs": "^1.18.1"
+    "urijs": "^1.18.4"
   }
 }
